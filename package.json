@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@types/lodash": "^4.17.20",
+    "mermaid": "^11.8.1",
+    "react-syntax-highlighter": "^15.6.1"
+  },
+  "devDependencies": {
+    "@types/react-syntax-highlighter": "^15.5.13"
+  }
+}

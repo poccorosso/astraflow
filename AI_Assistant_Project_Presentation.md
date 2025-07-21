@@ -313,5 +313,3 @@ A modern, scalable AI assistant that combines fast chat capabilities with compre
 
 **Thank you for your attention!**
 *Questions & Discussion*
-
-pip install -e

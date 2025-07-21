@@ -1,0 +1,78 @@
+{
+  "acfa2aa1-4a55-4d4f-aa58-a8c536903bb4": {
+    "id": "acfa2aa1-4a55-4d4f-aa58-a8c536903bb4",
+    "name": "Lucca",
+    "background": "Software engineer.\n",
+    "role": "Software engineer",
+    "experience_level": "expert",
+    "skills": [
+      "JavaScript",
+      "Python",
+      "React",
+      "Node.js",
+      "Docker",
+      "Kubernetes",
+      "java",
+      "dotnet"
+    ],
+    "keywords": [
+      "web development",
+      "AI",
+      "UI client",
+      "langgraph",
+      "llmChain"
+    ],
+    "interests": [],
+    "preferred_communication_style": "detailed",
+    "goals": "Become a cloud architecture expert and AI specialist",
+    "current_projects": [],
+    "learning_objectives": [
+      "LLMChain"
+    ],
+    "created_at": "2025-07-16T21:01:21.813431",
+    "updated_at": "2025-07-20T17:26:59.429255"
+  },
+  "02d25812-3c58-4c5c-afd8-b4e6d496808f": {
+    "id": "02d25812-3c58-4c5c-afd8-b4e6d496808f",
+    "name": "John Snow",
+    "background": "Senior Backend Engineer",
+    "role": "Senior Backend Engineer",
+    "experience_level": "expert",
+    "skills": [
+      "Java",
+      "Python",
+      "Go",
+      "Kubernetes",
+      "Docker",
+      "AWS",
+      "PostgreSQL",
+      "Redis"
+    ],
+    "keywords": [
+      "microservices",
+      "distributed systems",
+      "scalability",
+      "performance"
+    ],
+    "interests": [
+      "system architecture",
+      "cloud computing",
+      "DevOps",
+      "performance optimization"
+    ],
+    "preferred_communication_style": "technical",
+    "goals": "Transition to system architect role and lead technical decisions",
+    "current_projects": [
+      "Microservices migration",
+      "Performance optimization",
+      "API gateway implementation"
+    ],
+    "learning_objectives": [
+      "Service mesh",
+      "Event-driven architecture",
+      "Machine learning operations"
+    ],
+    "created_at": "2025-07-16T21:55:23.651511",
+    "updated_at": "2025-07-20T17:24:34.183856"
+  }
+}

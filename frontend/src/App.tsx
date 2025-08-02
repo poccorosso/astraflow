@@ -37,7 +37,7 @@ export default function App() {
     llm_provider: string;
     temperature: number;
   }>({
-    apiUrl: getApiUrl("ai_search", "search").replace("/runs/stream", ""),
+    apiUrl: getApiUrl("ai_search", "get"),
     assistantId: "agent",
     messagesKey: "messages",
     onUpdateEvent: (event: any) => {

@@ -1,7 +1,8 @@
 {
   "dependencies": ["."],
   "graphs": {
-    "agent": "./src/agent/graph.py:graph"
+    "agent": "./src/agent/graph.py:graph",
+    "chat": "./src/agent/chat_graph.py:simple_chat"
   },
   "http": {
     "app": "./src/agent/app.py:app"

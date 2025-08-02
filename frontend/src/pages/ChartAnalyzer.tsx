@@ -709,7 +709,7 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
     if (!inputManager.value.trim() || !excelData) return;
 
     setIsAnalyzing(true);
-    trackUserBehavior("ai_search_start", { query: inputManager.value.trim() });
+    trackUserBehavior("getApiUrl_start", { query: inputManager.value.trim() });
 
     try {
       const analysis = await analyzeSearchQuery(inputManager.value.trim());
@@ -1269,8 +1269,8 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
   const renderDataView = useMemo(() => {
     return (
       <div className="flex gap-4">
-        {/* Data Overview - 70% */}
-        <Card className="flex-[0.7]">
+        {/* Data Overview - 30% */}
+        <Card className="flex-[0.3]">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Data Overview</CardTitle>
@@ -1317,28 +1317,6 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
                         </SelectContent>
                       </Select>
                     )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        exportToCSV(convertToGridData(excelData), "data.csv")
-                      }
-                      className="h-8 px-2"
-                    >
-                      <Download className="h-3 w-3 mr-1" />
-                      CSV
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        exportToExcel(convertToGridData(excelData), "data.xlsx")
-                      }
-                      className="h-8 px-2"
-                    >
-                      <Download className="h-3 w-3 mr-1" />
-                      Excel
-                    </Button>
                   </div>
                 )}
               </div>
@@ -1397,50 +1375,6 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
                     </div>
                   </div>
                 </div>
-
-                {/* Original Data Table - Shows all uploaded data */}
-                <div
-                  className="ag-theme-alpine"
-                  style={{ height: "30vh", width: "100%" }}
-                >
-                  <AgGridReact
-                    rowData={convertToGridData(excelData)}
-                    columnDefs={columnDefs}
-                    pagination={true}
-                    paginationPageSize={50}
-                    paginationPageSizeSelector={[50, 100, 200, 500]}
-                    defaultColDef={{
-                      sortable: true,
-                      filter: true,
-                      resizable: true,
-                      minWidth: 100,
-                    }}
-                    animateRows={true}
-                    rowSelection="multiple"
-                    localeText={{
-                      page: "Page",
-                      more: "More",
-                      to: "to",
-                      of: "of",
-                      next: "Next",
-                      last: "Last",
-                      first: "First",
-                      previous: "Previous",
-                      loadingOoo: "Loading...",
-                      selectAll: "Select All",
-                      searchOoo: "Search...",
-                      blanks: "Blanks",
-                      filterOoo: "Filter...",
-                      applyFilter: "Apply Filter",
-                      equals: "Equals",
-                      notEqual: "Not Equal",
-                      contains: "Contains",
-                      notContains: "Not Contains",
-                      startsWith: "Starts With",
-                      endsWith: "Ends With",
-                    }}
-                  />
-                </div>
               </div>
             ) : (
               <div className="text-center py-12 text-muted-foreground">
@@ -1454,8 +1388,8 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
           </CardContent>
         </Card>
 
-        {/* AI Search - 30% */}
-        <Card className="flex-[0.3]">
+        {/* AI Search - 70% */}
+        <Card className="flex-[0.4]">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Search className="h-4 w-4" />
@@ -1497,7 +1431,9 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
               <div className="flex gap-2">
                 <Button
                   onClick={handleAISearch}
-                  disabled={isAnalyzing || !inputManager.value.trim() || !excelData}
+                  disabled={
+                    isAnalyzing || !inputManager.value.trim() || !excelData
+                  }
                   size="sm"
                 >
                   {isAnalyzing ? "..." : "Search"}
@@ -1506,7 +1442,7 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    inputManager.reset()
+                    inputManager.reset();
                     setFilters([]);
                     setAiAnalysis(null);
                     setAiSuggestedFilters([]);
@@ -1519,36 +1455,41 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
                 </Button>
               </div>
             </div>
-
-            {/* AI Analysis Result */}
-            {aiAnalysis && !aiAnalysis.success && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <div className="text-red-600 text-xs flex items-center gap-2">
-                  <AlertCircle className="h-3 w-3" />
-                  <span>{aiAnalysis.error || "Analysis failed"}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Filter Manager - Show Applied Filters */}
-            {excelData && filters.length > 0 && (
-              <div className="mt-3">
-                <p className="text-sm bg-green-50 border border-green-200 ">
-                  {aiAnalysis?.interpretation}
-                </p>
-                <FilterManager
-                  filters={filters}
-                  availableColumns={excelData.headers}
-                  onFiltersChange={handleFiltersChange}
-                  onApplyFilters={handleApplyFilters}
-                  aiSuggestedFilters={aiSuggestedFilters}
-                  onAcceptAISuggestion={handleAcceptAISuggestion}
-                  className="border-0 shadow-none bg-transparent p-0"
-                />
-              </div>
-            )}
           </CardContent>
         </Card>
+        {aiAnalysis && (
+          <Card className="flex-[0.3]">
+            <CardContent>
+              {/* AI Analysis Result */}
+              {!aiAnalysis.success && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="text-red-600 text-xs flex items-center gap-2">
+                    <AlertCircle className="h-3 w-3" />
+                    <span>{aiAnalysis.error || "Analysis failed"}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Filter Manager - Show Applied Filters */}
+              {excelData && filters.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-sm bg-green-50 border border-green-200 ">
+                    {aiAnalysis?.interpretation}
+                  </p>
+                  <FilterManager
+                    filters={filters}
+                    availableColumns={excelData.headers}
+                    onFiltersChange={handleFiltersChange}
+                    onApplyFilters={handleApplyFilters}
+                    aiSuggestedFilters={aiSuggestedFilters}
+                    onAcceptAISuggestion={handleAcceptAISuggestion}
+                    className="border-0 shadow-none bg-transparent p-0"
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
     );
   }, [
@@ -1680,113 +1621,114 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
         </TabsContent>
 
         <TabsContent value="chart" className="mt-4">
-          <div className="space-y-6">
+          <div className="space-y-2 flex">
             {/* Chart Configuration */}
             {excelData && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Chart Configuration</h3>
-                <div className="gap-4 flex">
-                  {/* Chart Type */}
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Chart Type
-                    </label>
-                    <Select
-                      value={chartConfig.type}
-                      onValueChange={(
-                        value: "bar" | "line" | "pie" | "scatter"
-                      ) =>
-                        setChartConfig((prev) => ({
-                          ...prev,
-                          type: value,
-                        }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="bar">Bar Chart</SelectItem>
-                        <SelectItem value="line">Line Chart</SelectItem>
-                        <SelectItem value="pie">Pie Chart</SelectItem>
-                        <SelectItem value="scatter">Scatter Plot</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <div className="space-y-4 mr-4 flex-[0.15]">
+                <Card className="p-3">
+                  <h3 className="text-lg font-semibold">Chart Configuration</h3>
+                  <div className="gap-4 ">
+                    {/* Chart Type */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        Chart Type
+                      </label>
+                      <Select
+                        value={chartConfig.type}
+                        onValueChange={(
+                          value: "bar" | "line" | "pie" | "scatter"
+                        ) =>
+                          setChartConfig((prev) => ({
+                            ...prev,
+                            type: value,
+                          }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bar">Bar Chart</SelectItem>
+                          <SelectItem value="line">Line Chart</SelectItem>
+                          <SelectItem value="pie">Pie Chart</SelectItem>
+                          <SelectItem value="scatter">Scatter Plot</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  {/* X-Axis */}
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      X Axis
-                    </label>
-                    <Select
-                      value={chartConfig.xAxis}
-                      onValueChange={(value) =>
-                        setChartConfig((prev) => ({
-                          ...prev,
-                          xAxis: value,
-                        }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select X Axis" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {excelData.headers.map((header) => (
-                          <SelectItem key={header} value={header}>
-                            {header}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    {/* X-Axis */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        X Axis
+                      </label>
+                      <Select
+                        value={chartConfig.xAxis}
+                        onValueChange={(value) =>
+                          setChartConfig((prev) => ({
+                            ...prev,
+                            xAxis: value,
+                          }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select X Axis" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {excelData.headers.map((header) => (
+                            <SelectItem key={header} value={header}>
+                              {header}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  {/* Y-Axis */}
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Y Axis
-                    </label>
-                    <Select
-                      value={chartConfig.yAxis}
-                      onValueChange={(value) =>
-                        setChartConfig((prev) => ({
-                          ...prev,
-                          yAxis: value,
-                        }))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Y Axis" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {excelData.headers.map((header) => (
-                          <SelectItem key={header} value={header}>
-                            {header}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    {/* Y-Axis */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        Y Axis
+                      </label>
+                      <Select
+                        value={chartConfig.yAxis}
+                        onValueChange={(value) =>
+                          setChartConfig((prev) => ({
+                            ...prev,
+                            yAxis: value,
+                          }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Y Axis" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {excelData.headers.map((header) => (
+                            <SelectItem key={header} value={header}>
+                              {header}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  {/* Chart Title */}
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Chart Title
-                    </label>
-                    <Input
-                      value={chartConfig.title}
-                      onChange={(e) =>
-                        setChartConfig((prev) => ({
-                          ...prev,
-                          title: e.target.value,
-                        }))
-                      }
-                      placeholder="Enter chart title"
-                    />
+                    {/* Chart Title */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        Chart Title
+                      </label>
+                      <Input
+                        value={chartConfig.title}
+                        onChange={(e) =>
+                          setChartConfig((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
+                        placeholder="Enter chart title"
+                      />
+                    </div>
                   </div>
-                </div>
-
-                <div className="flex gap-4">
+                </Card>
+                <div className="grid gap-4 m-2">
                   <Button
                     onClick={() => {
                       setShowChart(true);
@@ -1823,38 +1765,39 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
                 </div>
               </div>
             )}
-
-            {/* Chart Display */}
-            {showChart && chartConfig.xAxis && chartConfig.yAxis && (
-              <div className="border rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-4">Generated Chart</h3>
-                <div className="flex justify-center">
-                  <SimpleChart
-                    data={aggregateDataForChart(
-                      hasSearched
-                        ? filteredData
-                        : convertToGridData(
-                            excelData || { headers: [], rows: [] }
-                          ),
-                      chartConfig.xAxis,
-                      chartConfig.yAxis
-                    )}
-                    xAxis={chartConfig.xAxis}
-                    yAxis={chartConfig.yAxis}
-                    type={chartConfig.type}
-                    title={chartConfig.title}
-                    colors={chartConfig.colors}
-                    width={800}
-                    height={500}
-                    allowZoom={true}
-                  />
+            <div className="flex-[0.65] mr-4">
+              {/* Chart Display */}
+              {showChart && chartConfig.xAxis && chartConfig.yAxis && (
+                <div className="border rounded-lg p-4">
+                  <h3 className="text-lg font-semibold mb-4">
+                    Generated Chart
+                  </h3>
+                  <div className="flex justify-center">
+                    <SimpleChart
+                      data={aggregateDataForChart(
+                        hasSearched
+                          ? filteredData
+                          : convertToGridData(
+                              excelData || { headers: [], rows: [] }
+                            ),
+                        chartConfig.xAxis,
+                        chartConfig.yAxis
+                      )}
+                      xAxis={chartConfig.xAxis}
+                      yAxis={chartConfig.yAxis}
+                      type={chartConfig.type}
+                      title={chartConfig.title}
+                      colors={chartConfig.colors}
+                      width={800}
+                      height={500}
+                      allowZoom={true}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {/* AI Chart Analysis Results */}
+              )}
+            </div>
             {chartDataAnalysis && (
-              <div className="border rounded-lg p-4 bg-blue-50">
+              <div className="border rounded-lg p-4 bg-blue-50 flex-[0.3]">
                 <h3 className="text-lg font-semibold mb-4 text-blue-800">
                   AI Data Analysis Results
                 </h3>
@@ -2114,6 +2057,7 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
     chartConfig,
     filteredData,
     hasSearched,
+    currentTab,
   ]);
 
   return (
@@ -2121,7 +2065,6 @@ export function ChartAnalyzer({ onShowProfiles }: ChartAnalyzerProps) {
       <div className="w-full space-y-3">
         {/* Header */}
         {renderHeader}
-        {/* Data Overview (70%) and Search (30%) Layout */}
         {renderDataView}
         {/* Chart Analysis and User Behavior */}
         {excelData && (

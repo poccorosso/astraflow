@@ -44,6 +44,7 @@ export const API_CONFIG: Record<ServiceType, ApiEndpoint> = {
       search: "/runs/stream",
       providers: "/api/providers",
       health: "/health",
+      get:"/"
     },
   },
 };

@@ -145,7 +145,7 @@ export function FilterManager({
                 key={filter.id}
                 className="flex items-center gap-1 p-1 bg-green-50 border border-green-200 rounded min-w-[500px] w-[600px]"
               >
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-2 items-center text-xs">
                   <div className="">
                     <Select
                       value={filter.column}
@@ -153,10 +153,13 @@ export function FilterManager({
                         updateFilter(filter.id, "column", value)
                       }
                     >
-                      <SelectTrigger className="h-8 text-xs  min-w-[140px] w-[160px]">
+                      <SelectTrigger
+                        size="sm"
+                        className="h-8 text-xxs min-w-[140px] w-[160px]"
+                      >
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="text-xs  min-w-[120px] w-[140px]">
+                      <SelectContent className="text-xs min-w-[120px] w-[140px]">
                         {availableColumns.map((column) => (
                           <SelectItem key={column} value={column}>
                             {column}
@@ -177,7 +180,10 @@ export function FilterManager({
                         )
                       }
                     >
-                      <SelectTrigger className="h-8 text-xs min-w-[120px] w-[160px]">
+                      <SelectTrigger
+                        size="sm"
+                        className="h-8 text-xxs min-w-[120px] w-[160px]"
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="text-xs min-w-[120px] w-[160px]">
@@ -197,7 +203,7 @@ export function FilterManager({
                         updateFilter(filter.id, "value", e.target.value)
                       }
                       placeholder="Value"
-                      className="h-8 text-xxs min-w-[100px] w-[180px]"
+                      className="h-8 text-sm min-w-[100px] w-[180px]"
                     />
                   </div>
                 </div>

@@ -128,6 +128,7 @@ def call_llm_with_provider(prompt: str, provider: str = "auto", temperature: flo
     if LANGCHAIN_AVAILABLE:
         return _call_llm_with_langchain(context_prompt, provider, temperature, model_override, abort_check_callback)
     else:
+        # Use direct clients with LangGraph-compatible interface
         return _call_llm_with_direct_clients(context_prompt, provider, temperature, model_override)
 
 
@@ -165,65 +166,94 @@ def _call_llm_with_langchain(prompt: str, provider: str, temperature: float, mod
 
 
 def _call_llm_with_direct_clients(prompt: str, provider: str, temperature: float, model_override: str = None):
-    """Fallback to direct API clients."""
+    """
+    LangGraph-compatible LLM client implementation.
+
+    This function integrates with LangGraph's execution model and can be called
+    through the LangGraph API endpoints for consistent behavior.
+    """
 
     try:
         if provider == "deepseek" and deepseek_client:
+            # Use LangGraph-compatible message format
+            messages = [{"role": "user", "content": prompt}]
+
             response = deepseek_client.chat.completions.create(
                 model=model_override or "deepseek-chat",
-                messages=[{"role": "user", "content": prompt}],
+                messages=messages,
                 temperature=temperature,
-                max_tokens=2000
+                max_tokens=2000,
+                stream=False  # For now, non-streaming. Streaming will be handled by LangGraph SDK
             )
-            return response.choices[0].message.content, "deepseek"
+
+            result_text = response.choices[0].message.content
+            print(f"[LangGraph] DeepSeek response: {result_text[:100]}...")
+            return result_text, "deepseek"
 
         elif provider == "gemini" and genai_client:
             model = model_override or "gemini-1.5-flash"
+
+            # Use LangGraph-compatible configuration
+            config = {
+                "temperature": temperature,
+                "max_output_tokens": 2000,
+            }
+
             response = genai_client.models.generate_content(
                 model=model,
                 contents=prompt,
-                config={"temperature": temperature}
+                config=config
             )
-            return response.text, "gemini"
+
+            result_text = response.text
+            print(f"[LangGraph] Gemini response: {result_text[:100]}...")
+            return result_text, "gemini"
 
         else:
-            raise Exception(f"Provider {provider} not available")
+            raise Exception(f"Provider {provider} not available for LangGraph execution")
 
     except Exception as e:
-        print(f"Direct client error with {provider}: {e}")
+        print(f"[LangGraph] Direct client error with {provider}: {e}")
 
-        # Intelligent fallback strategy
+        # Intelligent fallback strategy for LangGraph workflows
         fallback_provider = "gemini" if provider == "deepseek" else "deepseek"
+        print(f"[LangGraph] Attempting fallback to {fallback_provider}")
 
         try:
             if fallback_provider == "gemini" and genai_client:
-                # Use a reliable Gemini model for fallback
                 fallback_model = "gemini-1.5-flash"
+                config = {"temperature": temperature, "max_output_tokens": 2000}
+
                 response = genai_client.models.generate_content(
                     model=fallback_model,
                     contents=prompt,
-                    config={"temperature": temperature}
+                    config=config
                 )
-                print(f"Fallback successful: using {fallback_provider} ({fallback_model})")
-                return response.text, fallback_provider
+
+                result_text = response.text
+                print(f"[LangGraph] Fallback successful: using {fallback_provider} ({fallback_model})")
+                return result_text, fallback_provider
 
             elif fallback_provider == "deepseek" and deepseek_client:
-                # Use a reliable DeepSeek model for fallback
                 fallback_model = "deepseek-chat"
+                messages = [{"role": "user", "content": prompt}]
+
                 response = deepseek_client.chat.completions.create(
                     model=fallback_model,
-                    messages=[{"role": "user", "content": prompt}],
+                    messages=messages,
                     temperature=temperature,
                     max_tokens=2000
                 )
-                print(f"Fallback successful: using {fallback_provider} ({fallback_model})")
-                return response.choices[0].message.content, fallback_provider
+
+                result_text = response.choices[0].message.content
+                print(f"[LangGraph] Fallback successful: using {fallback_provider} ({fallback_model})")
+                return result_text, fallback_provider
             else:
                 raise Exception(f"Fallback provider {fallback_provider} not available")
 
         except Exception as e2:
-            print(f"Fallback to {fallback_provider} also failed: {e2}")
-            raise Exception(f"Both {provider} and {fallback_provider} failed. Original error: {e}")
+            print(f"[LangGraph] Fallback to {fallback_provider} also failed: {e2}")
+            raise Exception(f"LangGraph execution failed: Both {provider} and {fallback_provider} failed. Original error: {e}")
 
 
 # Nodes
